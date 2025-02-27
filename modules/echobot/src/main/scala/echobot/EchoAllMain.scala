@@ -12,19 +12,10 @@ import echobot.EchoAllMain.logger
 object EchoAllMain extends IOApp with StrictLogging {
   override def run(args: List[String]): IO[ExitCode] = {
     logger.info(s"Running EchoAllMain with args: $args")
-    val default = port"8080"
-    val port: Port = args
-      .headOption
-      .flatMap(Port.fromString)
-      .getOrElse(default)
+    val default    = port"8080"
+    val port: Port = args.headOption.flatMap(Port.fromString).getOrElse(default)
 
-
-    val result   = for {
-      server <- WebSocketServer.run(port)
-      _ <- IO(logger.info("Exiting..."))
-    } yield ()
-
-    result.as(ExitCode.Success)
+    WebSocketServer.run(port).as(ExitCode.Success)
   }
 
 }

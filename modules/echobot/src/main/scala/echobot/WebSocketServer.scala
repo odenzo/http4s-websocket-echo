@@ -24,13 +24,13 @@ object WebSocketServer extends StrictLogging {
 
   def routes(ws: WebSocketBuilder2[IO]): HttpRoutes[IO] =
     HttpRoutes.of[IO] {
-      case rq@GET -> Root / "ws" =>
+      case rq @ GET -> Root / "ws" =>
         val loop: Pipe[IO, WebSocketFrame, WebSocketFrame] =
-          (in: fs2.Stream[IO, websocket.WebSocketFrame]) => in.debug(wsf => wsf.toString, s => logger.info(s"Inbound: $s "))
-
+          (in: fs2.Stream[IO, websocket.WebSocketFrame]) =>
+            in.debug(wsf => wsf.toString, s => logger.info(s"Inbound: $s "))
 
         logger.info(s"Matched a GET Request to /ws ${rq.toString}")
-        ws.build(loop)
+        ws.build(loop) // This is wrong? send receive or receive send loop. We just get the upgrade message
     }
 
   def buildServerResource(onPort: Port): Resource[IO, Server] = {
